@@ -8,18 +8,16 @@ The objective is to build a lightweight, accurate, and scalable image classifier
 
 ---
 
-## 🖼️ **Preview Screenshots**
-
 ### 🌱 Home Interface
 
 <p align="center">
- <img src="https://drive.google.com/uc?export=view&id=1yBSh7zuDdUp8OQcxDxwxwZCf2UYlkPQO" width="800">
+ <img src="https://drive.google.com/uc?export=view&id=1mOGOhZflU5pPdr9h22qVMvd2-R1ragD_" width="800">
 </p>
 
 ### 🍁 Classification Output
 
 <p align="center">
- <img src="https://drive.google.com/uc?export=view&id=1gQ9ZSEXVydIrZwm0XUdYouLbkYFCJnGp" width="800">
+ <img src="https://drive.google.com/uc?export=view&id=1Lc2pzVETaKfdL4jDAZ4IyyjadfEywNf4" width="800">
 </p>
 
 ---
@@ -37,7 +35,7 @@ conda activate mushroom_dl
 
 # Step 3: Clone the repository
 git clone https://github.com/YourUserName/your-repo.git
-cd AI-Mushroom-Classification-Analysis-master
+cd Ai-Mushroom-Classifier-master
 
 # Step 4: Install project dependencies
 pip install -r requirements.txt
