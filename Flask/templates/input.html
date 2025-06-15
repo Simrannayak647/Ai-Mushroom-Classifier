@@ -1,0 +1,596 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Mushroom Classification</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    :root {
+      --primary: #2e8b57;
+      --primary-dark: #1d6140;
+      --secondary: #f8f9fa;
+      --accent: #ff6b6b;
+      --text: #333333;
+      --light-text: #6c757d;
+      --card-bg: rgba(255, 255, 255, 0.95);
+      --overlay: rgba(46, 139, 87, 0.1);
+      --shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+      --border-radius: 20px;
+      --transition: all 0.3s ease;
+    }
+    
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    
+    body {
+      font-family: 'Poppins', sans-serif;
+      background: linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7)), 
+                  url('https://images.unsplash.com/photo-1558616629-899031969d5e?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MzB8fG11c2hyb29tfGVufDB8fDB8fHww') no-repeat center center fixed;
+      background-size: cover;
+      color: var(--text);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      padding: 20px;
+    }
+    
+    header {
+      text-align: center;
+      padding: 30px 0;
+      margin-bottom: 20px;
+    }
+    
+    .logo {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      background: var(--overlay);
+      padding: 12px 25px;
+      border-radius: 50px;
+      backdrop-filter: blur(5px);
+      margin-bottom: 15px;
+    }
+    
+    .logo i {
+      font-size: 28px;
+      color: var(--primary);
+    }
+    
+    h1 {
+      font-size: 2.5rem;
+      font-weight: 700;
+      color: white;
+      margin-bottom: 10px;
+      text-shadow: 0 2px 4px rgba(0,0,0,0.2);
+    }
+    
+    .subtitle {
+      color: rgba(255, 255, 255, 0.85);
+      font-size: 1.1rem;
+      max-width: 600px;
+      margin: 0 auto;
+      line-height: 1.6;
+    }
+    
+    .wrapper {
+      display: flex;
+      justify-content: center;
+      flex: 1;
+      width: 100%;
+      max-width: 1300px;
+      margin: 0 auto;
+    }
+    
+    .upload-container {
+      display: flex;
+      background: var(--card-bg);
+      border-radius: var(--border-radius);
+      box-shadow: var(--shadow);
+      overflow: hidden;
+      width: 100%;
+      max-width: 1200px;
+      transition: var(--transition);
+      position: relative;
+      z-index: 2;
+    }
+    
+    .upload-container::before {
+      content: '';
+      position: absolute;
+      top: -2px;
+      left: -2px;
+      right: -2px;
+      bottom: -2px;
+      background: linear-gradient(45deg, var(--primary), #8bc34a, #4caf50);
+      z-index: -1;
+      border-radius: var(--border-radius);
+      animation: borderAnimation 3s ease infinite;
+      background-size: 300% 300%;
+    }
+    
+    @keyframes borderAnimation {
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
+    
+    .upload-form {
+      flex: 1;
+      padding: 40px;
+      display: flex;
+      flex-direction: column;
+      position: relative;
+      overflow: hidden;
+    }
+    
+    .form-header {
+      margin-bottom: 30px;
+    }
+    
+    .form-header h3 {
+      font-size: 1.8rem;
+      font-weight: 600;
+      color: var(--primary-dark);
+      margin-bottom: 10px;
+    }
+    
+    .form-header p {
+      color: var(--light-text);
+      font-size: 1rem;
+      line-height: 1.6;
+    }
+    
+    .upload-area {
+      border: 2px dashed #d1d5db;
+      border-radius: 15px;
+      padding: 40px 20px;
+      text-align: center;
+      margin-bottom: 25px;
+      transition: var(--transition);
+      background: rgba(249, 250, 251, 0.5);
+      cursor: pointer;
+    }
+    
+    .upload-area:hover {
+      border-color: var(--primary);
+      background: rgba(46, 139, 87, 0.05);
+    }
+    
+    .upload-area i {
+      font-size: 48px;
+      color: var(--primary);
+      margin-bottom: 15px;
+    }
+    
+    .upload-area h4 {
+      font-size: 1.2rem;
+      font-weight: 500;
+      margin-bottom: 10px;
+      color: var(--text);
+    }
+    
+    .upload-area p {
+      color: var(--light-text);
+      font-size: 0.9rem;
+      margin-bottom: 15px;
+    }
+    
+    .file-label {
+      display: inline-block;
+      background: var(--primary);
+      color: white;
+      padding: 12px 28px;
+      border-radius: 12px;
+      cursor: pointer;
+      transition: var(--transition);
+      font-weight: 500;
+      box-shadow: 0 4px 10px rgba(46, 139, 87, 0.3);
+    }
+    
+    .file-label:hover {
+      background: var(--primary-dark);
+      transform: translateY(-2px);
+      box-shadow: 0 6px 15px rgba(46, 139, 87, 0.4);
+    }
+    
+    #file_upload {
+      display: none;
+    }
+    
+    .button-group {
+      display: flex;
+      gap: 15px;
+      margin-top: 20px;
+    }
+    
+    #button-31 {
+      background: var(--primary);
+      color: white;
+      padding: 14px 28px;
+      border-radius: 12px;
+      border: none;
+      cursor: pointer;
+      font-weight: 500;
+      font-size: 1rem;
+      transition: var(--transition);
+      flex: 1;
+      box-shadow: 0 4px 10px rgba(46, 139, 87, 0.3);
+    }
+    
+    #button-31:hover {
+      background: var(--primary-dark);
+      transform: translateY(-2px);
+      box-shadow: 0 6px 15px rgba(46, 139, 87, 0.4);
+    }
+    
+    .clear-btn {
+      background: #f0f2f5;
+      color: var(--text);
+      padding: 14px 28px;
+      border-radius: 12px;
+      border: none;
+      cursor: pointer;
+      font-weight: 500;
+      font-size: 1rem;
+      transition: var(--transition);
+      flex: 1;
+    }
+    
+    .clear-btn:hover {
+      background: #e5e7eb;
+      transform: translateY(-2px);
+    }
+    
+    .preview-section {
+      flex: 1;
+      padding: 40px;
+      display: flex;
+      flex-direction: column;
+      background: linear-gradient(to bottom, rgba(249, 250, 251, 0.9), rgba(240, 253, 244, 0.9));
+      position: relative;
+    }
+    
+    .preview-header {
+      margin-bottom: 30px;
+    }
+    
+    .preview-header h3 {
+      font-size: 1.8rem;
+      font-weight: 600;
+      color: var(--primary-dark);
+      margin-bottom: 10px;
+    }
+    
+    .preview-header p {
+      color: var(--light-text);
+      font-size: 1rem;
+      line-height: 1.6;
+    }
+    
+    .preview-container {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: white;
+      border-radius: 15px;
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+      overflow: hidden;
+      min-height: 300px;
+      position: relative;
+    }
+    
+    #image-preview {
+      max-width: 100%;
+      max-height: 100%;
+      object-fit: contain;
+      display: none;
+    }
+    
+    .preview-placeholder {
+      text-align: center;
+      color: var(--light-text);
+      padding: 30px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      width: 100%;
+    }
+    
+    .preview-placeholder i {
+      font-size: 60px;
+      color: #d1d5db;
+      margin-bottom: 20px;
+    }
+    
+    .preview-placeholder p {
+      font-size: 1.1rem;
+    }
+    
+    #result {
+      background: var(--primary);
+      color: white;
+      text-align: center;
+      padding: 25px;
+      margin-top: 30px;
+      border-radius: 15px;
+      font-size: 1.4rem;
+      font-weight: 600;
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+      animation: fadeIn 0.5s ease;
+      display: none;
+    }
+    
+    .result-content {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+    
+    .species {
+      font-size: 1.8rem;
+      font-weight: 700;
+    }
+    
+    .confidence {
+      font-size: 1.2rem;
+      opacity: 0.9;
+    }
+    
+    .note {
+      font-size: 0.9rem;
+      opacity: 0.8;
+      font-weight: 400;
+      margin-top: 10px;
+    }
+    
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    
+    footer {
+      text-align: center;
+      padding: 30px 0;
+      color: rgba(255, 255, 255, 0.7);
+      font-size: 0.9rem;
+      margin-top: auto;
+    }
+    
+    /* Loading spinner */
+    .spinner {
+      animation: spin 1s linear infinite;
+      display: inline-block;
+    }
+    
+    @keyframes spin {
+      from { transform: rotate(0deg); }
+      to { transform: rotate(360deg); }
+    }
+    
+    /* Responsive design */
+    @media (max-width: 900px) {
+      .upload-container {
+        flex-direction: column;
+      }
+      
+      .upload-form, .preview-section {
+        padding: 30px;
+      }
+      
+      h1 {
+        font-size: 2rem;
+      }
+    }
+    
+    @media (max-width: 600px) {
+      .button-group {
+        flex-direction: column;
+      }
+      
+      .upload-form, .preview-section {
+        padding: 25px;
+      }
+      
+      .upload-area {
+        padding: 30px 15px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="logo">
+      <i class="fas fa-mushroom"></i>
+      <span>FungiScan</span>
+    </div>
+    <h1>Mushroom Classification</h1>
+    <p class="subtitle">Upload an image of a mushroom to identify its species using our advanced AI classification system</p>
+  </header>
+  
+  <div class="wrapper">
+    <div class="upload-container">
+      <form id="classify-form" action="/Mushroom-classification-predict" method="post" enctype="multipart/form-data" class="upload-form">
+        <div class="form-header">
+          <h3>Upload a Mushroom Image</h3>
+          <p>Select an image from your device to classify the mushroom species</p>
+        </div>
+        
+        <div class="upload-area" id="drop-area">
+          <i class="fas fa-cloud-upload-alt"></i>
+          <h4>Drag & Drop or Click to Browse</h4>
+          <p>Supports JPG, PNG, or WEBP (Max 5MB)</p>
+          <label for="file_upload" class="file-label">Select Image</label>
+        </div>
+        
+        <input type="file" name="image_file" id="file_upload" class="file-input" accept="image/*">
+        
+        <div class="button-group">
+          <button type="submit" id="button-31">Classify Mushroom</button>
+          <button type="button" class="clear-btn" id="clear-btn">Clear</button>
+        </div>
+      </form>
+      
+      <div class="preview-section">
+        <div class="preview-header">
+          <h3>Image Preview</h3>
+          <p>Your uploaded image will appear here for classification</p>
+        </div>
+        
+        <div class="preview-container">
+          <div class="preview-placeholder" id="placeholder">
+            <i class="fas fa-image"></i>
+            <p>No image selected</p>
+          </div>
+          <img id="image-preview" alt="Mushroom preview">
+        </div>
+        
+        <div id="result">
+          <div id="prediction-result"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <footer>
+    <p>© 2025 FungiScan | Advanced Mushroom Classification System</p>
+  </footer>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      const fileInput = document.getElementById('file_upload');
+      const dropArea = document.getElementById('drop-area');
+      const imagePreview = document.getElementById('image-preview');
+      const placeholder = document.getElementById('placeholder');
+      const clearBtn = document.getElementById('clear-btn');
+      const resultDiv = document.getElementById('result');
+      const predictionResult = document.getElementById('prediction-result');
+      const form = document.getElementById('classify-form');
+      
+      // Handle file selection
+      fileInput.addEventListener('change', function(e) {
+        if (this.files && this.files[0]) {
+          const file = this.files[0];
+          
+          // Check if file is an image
+          if (!file.type.match('image.*')) {
+            alert('Please select an image file (jpg, png, gif)');
+            return;
+          }
+          
+          // Check file size (max 5MB)
+          if (file.size > 5 * 1024 * 1024) {
+            alert('File size exceeds 5MB limit');
+            return;
+          }
+          
+          const reader = new FileReader();
+          
+          reader.onload = function(e) {
+            imagePreview.src = e.target.result;
+            imagePreview.style.display = 'block';
+            placeholder.style.display = 'none';
+            resultDiv.style.display = 'none';
+          }
+          
+          reader.readAsDataURL(file);
+        }
+      });
+      
+      // Drag and drop functionality
+      ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+        dropArea.addEventListener(eventName, preventDefaults, false);
+      });
+      
+      function preventDefaults(e) {
+        e.preventDefault();
+        e.stopPropagation();
+      }
+      
+      ['dragenter', 'dragover'].forEach(eventName => {
+        dropArea.addEventListener(eventName, highlight, false);
+      });
+      
+      ['dragleave', 'drop'].forEach(eventName => {
+        dropArea.addEventListener(eventName, unhighlight, false);
+      });
+      
+      function highlight() {
+        dropArea.style.borderColor = 'var(--primary)';
+        dropArea.style.backgroundColor = 'rgba(46, 139, 87, 0.1)';
+      }
+      
+      function unhighlight() {
+        dropArea.style.borderColor = '#d1d5db';
+        dropArea.style.backgroundColor = 'rgba(249, 250, 251, 0.5)';
+      }
+      
+      dropArea.addEventListener('drop', handleDrop, false);
+      
+      function handleDrop(e) {
+        const dt = e.dataTransfer;
+        const file = dt.files[0];
+        fileInput.files = dt.files;
+        
+        // Trigger the change event
+        const event = new Event('change');
+        fileInput.dispatchEvent(event);
+      }
+      
+      // Clear button functionality
+      clearBtn.addEventListener('click', function() {
+        fileInput.value = '';
+        imagePreview.style.display = 'none';
+        placeholder.style.display = 'flex';
+        resultDiv.style.display = 'none';
+        predictionResult.innerHTML = '';
+      });
+      
+      // Form submission handling
+      form.addEventListener('submit', function(e) {
+        if (!fileInput.files.length) {
+          alert('Please select an image first');
+          e.preventDefault();
+          return;
+        }
+        
+        // Show loading state
+        resultDiv.style.display = 'block';
+        predictionResult.innerHTML = '<div class="spinner"><i class="fas fa-spinner"></i></div> Analyzing mushroom...';
+      });
+      
+      // Check for prediction result on page load
+      const prediction = "{{ prediction }}";
+      if (prediction) {
+        resultDiv.style.display = 'block';
+        predictionResult.innerHTML = `
+          <div class="result-content">
+            <div class="species">${prediction}</div>
+          </div>
+        `;
+        
+        // Try to restore image preview from session
+        const imageData = sessionStorage.getItem("imageData");
+        if (imageData) {
+          imagePreview.src = imageData;
+          imagePreview.style.display = 'block';
+          placeholder.style.display = 'none';
+        }
+      }
+      
+      // Store image in session storage before form submission
+      form.addEventListener('submit', function() {
+        if (imagePreview.src && imagePreview.src !== window.location.href) {
+          sessionStorage.setItem("imageData", imagePreview.src);
+        }
+      });
+    });
+  </script>
+</body>
+</html>

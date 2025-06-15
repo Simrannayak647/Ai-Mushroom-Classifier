@@ -1,0 +1,529 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>FungiScan | AI Mushroom Classification</title>
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&family=Playfair+Display:wght@700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    :root {
+      --primary: #2e8b57;
+      --primary-dark: #1d6140;
+      --secondary: #8fbc8f;
+      --accent: #ff6b6b;
+      --light: #f8f9fa;
+      --dark: #1a1a1a;
+      --glass: rgba(255, 255, 255, 0.1);
+      --glass-border: rgba(255, 255, 255, 0.2);
+      --shadow: 0 15px 35px rgba(0, 0, 0, 0.3);
+      --transition: all 0.3s ease;
+    }
+    
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    
+    body {
+      font-family: 'Montserrat', sans-serif;
+      background: linear-gradient(rgba(0, 0, 0, 0.85), rgba(0, 0, 0, 0.9)), 
+                  url('https://images.unsplash.com/photo-1634700902949-e2f5a6d3d7ff?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTA3fHxtdXNocm9vbXxlbnwwfHwwfHx8MA%3D%3D') no-repeat center center fixed;
+      background-size: cover;
+      color: var(--light);
+      min-height: 100vh;
+      overflow-x: hidden;
+      position: relative;
+    }
+    
+    /* Decorative elements */
+    .mushroom-decoration {
+      position: absolute;
+      z-index: 0;
+      opacity: 0.15;
+    }
+    
+    .mushroom-decoration:nth-child(1) {
+      top: 10%;
+      left: 5%;
+      width: 80px;
+    }
+    
+    .mushroom-decoration:nth-child(2) {
+      bottom: 20%;
+      right: 8%;
+      width: 60px;
+    }
+    
+    /* Header styling */
+    header {
+      padding: 30px 40px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      position: relative;
+      z-index: 10;
+      max-width: 1600px;
+      margin: 0 auto;
+    }
+    
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    
+    .logo i {
+      font-size: 32px;
+      color: var(--secondary);
+    }
+    
+    .logo h1 {
+      font-family: 'Playfair Display', serif;
+      font-weight: 700;
+      font-size: 28px;
+      background: linear-gradient(to right, var(--secondary), var(--primary));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    
+    nav ul {
+      display: flex;
+      list-style: none;
+      gap: 30px;
+    }
+    
+    nav a {
+      color: var(--light);
+      text-decoration: none;
+      font-weight: 500;
+      font-size: 16px;
+      position: relative;
+      padding-bottom: 5px;
+    }
+    
+    nav a:after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 0;
+      height: 2px;
+      background: var(--secondary);
+      transition: var(--transition);
+    }
+    
+    nav a:hover {
+      color: var(--secondary);
+    }
+    
+    nav a:hover:after {
+      width: 100%;
+    }
+    
+    /* Main content */
+    .container {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: calc(100vh - 120px);
+      padding: 40px;
+      position: relative;
+      z-index: 5;
+      max-width: 1600px;
+      margin: 0 auto;
+    }
+    
+    .content-box {
+      display: flex;
+      flex-wrap: wrap;
+      width: 100%;
+      gap: 60px;
+      justify-content: center;
+      align-items: center;
+    }
+    
+    .text-content {
+      flex: 1;
+      min-width: 300px;
+      max-width: 600px;
+      background: linear-gradient(135deg, rgba(46, 139, 87, 0.15), rgba(143, 188, 143, 0.1));
+      backdrop-filter: blur(15px);
+      border: 1px solid var(--glass-border);
+      border-radius: 20px;
+      padding: 50px;
+      box-shadow: var(--shadow);
+      position: relative;
+      overflow: hidden;
+    }
+    
+    .text-content:before {
+      content: '';
+      position: absolute;
+      top: -50%;
+      left: -50%;
+      width: 200%;
+      height: 200%;
+      background: radial-gradient(circle, rgba(46,139,87,0.1) 0%, rgba(0,0,0,0) 70%);
+      z-index: -1;
+    }
+    
+    .text-content h1 {
+      font-family: 'Playfair Display', serif;
+      font-size: 3.5rem;
+      font-weight: 800;
+      margin-bottom: 20px;
+      line-height: 1.2;
+      background: linear-gradient(to right, #fff, var(--secondary));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    
+    .text-content h3 {
+      font-size: 1.6rem;
+      font-weight: 500;
+      color: var(--secondary);
+      margin-bottom: 25px;
+      position: relative;
+      padding-left: 20px;
+    }
+    
+    .text-content h3:before {
+      content: '';
+      position: absolute;
+      left: 0;
+      top: 50%;
+      transform: translateY(-50%);
+      height: 60%;
+      width: 4px;
+      background: var(--secondary);
+      border-radius: 10px;
+    }
+    
+    .text-content p {
+      font-size: 1.2rem;
+      line-height: 1.8;
+      margin-bottom: 30px;
+      color: #e0e0e0;
+    }
+    
+    .text-content .features {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 20px;
+      margin-bottom: 40px;
+    }
+    
+    .text-content .feature-item {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 10px;
+      background: rgba(255, 255, 255, 0.05);
+      border-radius: 10px;
+    }
+    
+    .text-content .feature-item i {
+      color: var(--secondary);
+      font-size: 20px;
+      min-width: 30px;
+    }
+    
+    .mushroom-showcase {
+      flex: 1;
+      min-width: 300px;
+      max-width: 500px;
+      position: relative;
+    }
+    
+    .mushroom-image {
+      width: 100%;
+      height: 500px;
+      border-radius: 20px;
+      overflow: hidden;
+      box-shadow: var(--shadow);
+      position: relative;
+      border: 1px solid var(--glass-border);
+    }
+    
+    .mushroom-image img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transition: var(--transition);
+    }
+    
+    .mushroom-overlay {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      background: linear-gradient(to top, rgba(0,0,0,0.85), transparent);
+      padding: 35px 30px;
+    }
+    
+    .mushroom-overlay h3 {
+      font-size: 1.6rem;
+      margin-bottom: 10px;
+      color: var(--secondary);
+    }
+    
+    .mushroom-overlay p {
+      font-size: 1.1rem;
+      opacity: 0.85;
+      font-weight: 300;
+    }
+    
+    .classification-info {
+      display: flex;
+      gap: 20px;
+      margin-top: 25px;
+    }
+    
+    .class-item {
+      flex: 1;
+      text-align: center;
+      padding: 15px;
+      background: rgba(46, 139, 87, 0.15);
+      border-radius: 10px;
+      border: 1px solid var(--glass-border);
+    }
+    
+    .class-item h4 {
+      font-size: 1.2rem;
+      margin-bottom: 8px;
+      color: var(--secondary);
+    }
+    
+    .class-item p {
+      font-size: 0.9rem;
+      opacity: 0.8;
+    }
+    
+    #predict_btn {
+      background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+      color: #fff;
+      font-family: 'Montserrat', sans-serif;
+      font-size: 1.2rem;
+      font-weight: 600;
+      padding: 18px 45px;
+      border: none;
+      border-radius: 50px;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 15px;
+      box-shadow: 0 8px 25px rgba(46, 139, 87, 0.4);
+      position: relative;
+      overflow: hidden;
+      transition: var(--transition);
+    }
+    
+    #predict_btn:hover {
+      background: linear-gradient(135deg, #3da56a, #1d6140);
+      transform: translateY(-3px);
+      box-shadow: 0 12px 30px rgba(46, 139, 87, 0.5);
+    }
+    
+    /* Footer */
+    footer {
+      text-align: center;
+      padding: 40px 30px 30px;
+      font-size: 0.9rem;
+      color: rgba(255, 255, 255, 0.6);
+      position: relative;
+      z-index: 10;
+      max-width: 1600px;
+      margin: 0 auto;
+    }
+    
+    footer a {
+      color: var(--secondary);
+      text-decoration: none;
+    }
+    
+    /* Responsive design */
+    @media (max-width: 1200px) {
+      .container {
+        padding: 40px 30px;
+      }
+      
+      .content-box {
+        gap: 40px;
+      }
+      
+      .text-content {
+        padding: 40px;
+      }
+    }
+    
+    @media (max-width: 992px) {
+      .content-box {
+        flex-direction: column;
+        align-items: center;
+      }
+      
+      .text-content, .mushroom-showcase {
+        max-width: 100%;
+      }
+      
+      header {
+        flex-direction: column;
+        gap: 20px;
+        padding: 20px 30px;
+      }
+      
+      .mushroom-image {
+        height: 450px;
+      }
+    }
+    
+    @media (max-width: 768px) {
+      .text-content h1 {
+        font-size: 2.8rem;
+      }
+      
+      .text-content .features {
+        grid-template-columns: 1fr;
+      }
+      
+      nav ul {
+        gap: 15px;
+        flex-wrap: wrap;
+        justify-content: center;
+      }
+      
+      .container {
+        padding: 30px 20px;
+      }
+      
+      .classification-info {
+        flex-wrap: wrap;
+      }
+    }
+    
+    @media (max-width: 480px) {
+      .text-content {
+        padding: 30px;
+      }
+      
+      .text-content h1 {
+        font-size: 2.3rem;
+      }
+      
+      .mushroom-image {
+        height: 380px;
+      }
+      
+      .text-content .feature-item {
+        padding: 8px;
+      }
+      
+      #predict_btn {
+        width: 100%;
+        justify-content: center;
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- Decorative mushrooms -->
+  <div class="mushroom-decoration">
+    <svg viewBox="0 0 100 100" fill="#8fbc8f">
+      <path d="M50,20 C60,15 70,20 75,30 C80,40 75,50 70,60 C65,70 55,75 50,80 C45,75 35,70 30,60 C25,50 20,40 25,30 C30,20 40,15 50,20 Z"/>
+    </svg>
+  </div>
+  <div class="mushroom-decoration">
+    <svg viewBox="0 0 100 100" fill="#2e8b57">
+      <path d="M50,20 C60,15 70,20 75,30 C80,40 75,50 70,60 C65,70 55,75 50,80 C45,75 35,70 30,60 C25,50 20,40 25,30 C30,20 40,15 50,20 Z"/>
+    </svg>
+  </div>
+  
+  <!-- Header -->
+  <header>
+    <div class="logo">
+      <i class="fas fa-mushroom"></i>
+      <h1>FungiScan</h1>
+    </div>
+   
+  </header>
+  
+  <!-- Main Content -->
+  <div class="container">
+    <div class="content-box">
+      <div class="text-content">
+        <h1>AI-Powered Mushroom Classification</h1>
+        <h3>Discover the Hidden World of Fungi</h3>
+        <p>
+          FungiScan leverages cutting-edge deep learning to accurately identify and classify mushroom species. 
+          Our AI-powered system transforms complex mycology into accessible knowledge for enthusiasts and professionals alike.
+        </p>
+        
+        <div class="features">
+          <div class="feature-item">
+            <i class="fas fa-brain"></i>
+            <span>Deep Neural Networks</span>
+          </div>
+          <div class="feature-item">
+            <i class="fas fa-leaf"></i>
+            <span>Three Mushroom Families</span>
+          </div>
+          <div class="feature-item">
+            <i class="fas fa-cogs"></i>
+            <span>Advanced Image Recognition</span>
+          </div>
+          <div class="feature-item">
+            <i class="fas fa-chart-line"></i>
+            <span>95% Classification Accuracy</span>
+          </div>
+        </div>
+        
+        <p>
+          Our technology specializes in identifying mushrooms from three distinct families:
+          <strong>Boletus</strong>, <strong>Lactarius</strong>, and <strong>Russula</strong> - 
+          representing the most diverse mushroom groups found in forests worldwide.
+        </p>
+        
+        <a href="{{ url_for('predict_page') }}">
+          <button id="predict_btn">
+            <i class="fas fa-search"></i>
+            Identify a Mushroom
+          </button>
+        </a>
+      </div>
+      
+      <div class="mushroom-showcase">
+        <div class="mushroom-image">
+          <img src="https://images.unsplash.com/photo-1558616629-899031969d5e?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MzB8fG11c2hyb29tfGVufDB8fDB8fHww" alt="Mushroom">
+          <div class="mushroom-overlay">
+            <h3>Boletus Edulis</h3>
+            <p>Prized edible mushroom known as "King Bolete"</p>
+          </div>
+        </div>
+        
+        <div class="classification-info">
+          <div class="class-item">
+            <h4>Boletus</h4>
+            <p>Pored mushrooms</p>
+          </div>
+          <div class="class-item">
+            <h4>Lactarius</h4>
+            <p>Milk-producing fungi</p>
+          </div>
+          <div class="class-item">
+            <h4>Russula</h4>
+            <p>Brittle mushrooms</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Footer -->
+  <footer>
+    <p>&copy; 2025 FungiScan | Advanced AI Mushroom Classification System</p>
+  
+  </footer>
+</body>
+</html>
